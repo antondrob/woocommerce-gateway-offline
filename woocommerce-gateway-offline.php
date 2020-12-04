@@ -8,13 +8,6 @@
  * Version: 1.0.2
  * Text Domain: wc-gateway-offline
  * Domain Path: /i18n/languages/
- *
- *
- * @package   WC-Gateway-Offline
- * @author    SkyVerge
- * @category  Admin
- *
- * This offline gateway payment method.
  */
 
 defined('ABSPATH') or exit;
