@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WooCommerce offline Gateway
+ * Plugin Name: WooCommerce Q-R Payment Gateway
  * Plugin URI:
  * Description:
  * Author:
@@ -8,6 +8,13 @@
  * Version: 1.0.2
  * Text Domain: wc-gateway-offline
  * Domain Path: /i18n/languages/
+ *
+ *
+ * @package   WC-Gateway-Offline
+ * @author    SkyVerge
+ * @category  Admin
+ *
+ * This offline gateway payment method.
  */
 
 defined('ABSPATH') or exit;
@@ -82,9 +89,9 @@ function wc_offline_gateway_init()
         {
 
             $this->id = 'offline_gateway';
-            $this->icon = apply_filters('woocommerce_offline_icon', '');
+            $this->icon = $this->get_option('logo');
             $this->has_fields = true;
-            $this->method_title = __('Offline', 'wc-gateway-offline');
+            $this->method_title = __('Q-R Payment Gateway', 'wc-gateway-offline');
             $this->method_description = __('Allows offline payments. Orders are marked as "on-hold" when received.', 'wc-gateway-offline');
 
 
@@ -117,14 +124,14 @@ function wc_offline_gateway_init()
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'wc-gateway-offline'),
                     'type' => 'checkbox',
-                    'label' => __('Enable Offline Payment', 'wc-gateway-offline'),
+                    'label' => __('Enable Q-R Payment Gateway', 'wc-gateway-offline'),
                     'default' => 'yes'
                 ),
                 'title' => array(
                     'title' => __('Title', 'wc-gateway-offline'),
                     'type' => 'text',
                     'description' => __('This controls the title for the payment method the customer sees during checkout.', 'wc-gateway-offline'),
-                    'default' => __('Offline Payment', 'wc-gateway-offline'),
+                    'default' => __('Q-R Payment Gateway', 'wc-gateway-offline'),
                     'desc_tip' => true,
                 ),
                 'description' => array(
@@ -145,6 +152,12 @@ function wc_offline_gateway_init()
                     'title' => __('QR code image url', 'wc-gateway-offline'),
                     'type' => 'url',
                     'description' => __('This controls the QR code image for the payment method the customer sees during checkout.', 'wc-gateway-offline'),
+                    'desc_tip' => true,
+                ),
+                'logo' => array(
+                    'title' => __('Logo url', 'wc-gateway-offline'),
+                    'type' => 'url',
+                    'description' => __('This controls payment method logo the customer sees during checkout.', 'wc-gateway-offline'),
                     'desc_tip' => true,
                 )
             ));
