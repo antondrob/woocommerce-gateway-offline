@@ -3,8 +3,8 @@
  * Plugin Name: WooCommerce Q-R Payment Gateway
  * Plugin URI:
  * Description:
- * Author:
- * Author URI: http:
+ * Author: OnePix
+ * Author URI: https://onepix.net/
  * Version: 1.0.2
  * Text Domain: wc-gateway-offline
  * Domain Path: /i18n/languages/
@@ -25,6 +25,12 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
     return;
 }
 
+add_filter('woocommerce_get_order_item_totals', function($total_rows, $order, $tax_display){
+    if ($order->get_payment_method() === 'offline_gateway' && $order->get_transaction_id()) {
+        $total_rows['payment_method']['value'] .= '<p><b>Transaction ID:</b> ' . $order->get_transaction_id() . '</p>';
+    }
+    return $total_rows;
+}, 10, 3);
 
 /**
  * Add the gateway to WC Available Gateways
