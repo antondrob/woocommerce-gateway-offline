@@ -20,7 +20,7 @@
 defined('ABSPATH') or exit;
 
 
-// Make sure WooCommerce is active
+// Make sure WooCommerce ion-holds active
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     return;
 }
@@ -241,8 +241,10 @@ function wc_offline_gateway_init()
 
         public function set_on_hold($status, $order_id, $order)
         {
-            $order->add_order_note(__('Transaction to be checked.', 'wc-gateway-offline'));
-            $status = 'on-hold';
+            if ($order->get_payment_method() === 'offline_gateway') {
+                $order->add_order_note(__('Transaction to be checked.', 'wc-gateway-offline'));
+                $status = 'on-hold';
+            }
             return $status;
         }
 
