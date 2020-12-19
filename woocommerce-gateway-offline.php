@@ -25,7 +25,7 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
     return;
 }
 
-add_filter('woocommerce_get_order_item_totals', function($total_rows, $order, $tax_display){
+add_filter('woocommerce_get_order_item_totals', function ($total_rows, $order, $tax_display) {
     if ($order->get_payment_method() === 'offline_gateway' && $order->get_transaction_id()) {
         $total_rows['payment_method']['value'] .= '<p><b>Transaction ID:</b> ' . $order->get_transaction_id() . '</p>';
     }
@@ -108,16 +108,18 @@ function wc_offline_gateway_init()
             // Define user set variables
             $this->title = $this->get_option('title');
             $this->description = $this->get_option('description');
+            $this->customer_note = $this->get_option('customer_note');
             $this->instructions = $this->get_option('instructions', $this->description);
             $this->qr_code = $this->get_option('qr_code');
 
             // Actions
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-            add_action('woocommerce_thankyou_' . $this->id, array($this, 'thankyou_page'));
+            add_action('woocommerce_thankyou_' . $this->id, [$this, 'thankyou_page']);
             add_filter('woocommerce_payment_complete_order_status', [$this, 'set_on_hold'], 10, 3);
 
             // Customer Emails
-            add_action('woocommerce_email_before_order_table', array($this, 'email_instructions'), 10, 3);
+            add_action('woocommerce_email_before_order_table', [$this, 'email_instructions'], 10, 3);
+            add_action('wp_enqueue_scripts', [$this, 'wp_enqueue_scripts']);
         }
 
 
@@ -145,6 +147,12 @@ function wc_offline_gateway_init()
                     'type' => 'textarea',
                     'description' => __('Payment method description that the customer will see on your checkout.', 'wc-gateway-offline'),
                     'default' => __('Please remit payment to Store Name upon pickup or delivery.', 'wc-gateway-offline'),
+                    'desc_tip' => true,
+                ),
+                'customer_note' => array(
+                    'title' => __('Customer Note', 'wc-gateway-offline'),
+                    'type' => 'textarea',
+                    'description' => __('Customer Note that the customer will see on your checkout.', 'wc-gateway-offline'),
                     'desc_tip' => true,
                 ),
                 'instructions' => array(
@@ -201,7 +209,10 @@ function wc_offline_gateway_init()
         {
             parent::payment_fields();
             if (!empty($this->qr_code)) {
-                echo '<img style="width:100%;max-height:unset;" src="' . $this->qr_code . '">';
+                echo '<img class="qr-code-img" src="' . $this->qr_code . '">';
+                if (!empty($this->customer_note)) {
+                    echo '<p class="customer-note">' . $this->customer_note . '</p>';
+                }
                 woocommerce_form_field('transaction-id', [
                     'label' => 'Transaction ID',
                     'required' => true
@@ -246,6 +257,10 @@ function wc_offline_gateway_init()
                 $status = 'on-hold';
             }
             return $status;
+        }
+
+        public function wp_enqueue_scripts(){
+            wp_enqueue_style('qr-pay', plugin_dir_url(__FILE__) . 'assets/css/qr-pay.css');
         }
 
     } // end \WC_Gateway_Offline class

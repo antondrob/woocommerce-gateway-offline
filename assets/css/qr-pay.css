@@ -1,0 +1,9 @@
+.customer-note {
+    margin-botton: 10px;
+}
+
+.qr-code-img {
+    width: 100%;
+    max-height: unset !important;
+    margin-bottom: 10px;
+}
